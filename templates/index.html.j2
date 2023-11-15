@@ -1,0 +1,16 @@
+{% extends "base.html.j2" %}
+
+{% block subtitle %}Routes{% endblock subtitle %}
+
+{% block body %}
+{% for route in routes %}
+<a href="{{ route.url }}">
+    <div class="bg-slate-700 rounded-2xl m-5 p-2 mx-10 md:mx-40">
+        <h3 class="text-base">
+            <span class="font-mono bg-teal-700 rounded-md p-1 px-2">/{{ route.url }}</span>
+            <span class="px-2">{{ route.desc }}</span>
+        </h3>
+    </div>
+</a>
+{% endfor %}
+{% endblock body %}

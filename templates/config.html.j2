@@ -1,0 +1,188 @@
+{% extends "base.html.j2" %}
+
+{% block subtitle %}Config{% endblock subtitle %}
+
+{% block body %}
+<div class="bg-slate-700 rounded-2xl m-5 mx-10 md:mx-40 p-5 transition" id="password-container">
+    <h2 class="font-bold inline">Password</h2>
+    <input type="password"
+        class="inline placeholder:italic w-500 rounded-md transition duration-300 outline-none focus:ring-cyan-400 focus:ring-4 bg-slate-600 p-1 mx-8"
+        id="password" placeholder="Password...">
+    <button id="password-btn"
+        class="h-8 px-2 font-bold hover:bg-neutral-600 rounded-md transition hover:scale-125 duration-300 ring-cyan-400 ring-4">Check</button>
+    <h2 id="password-confirmation" class="inline px-8 transition-colors"></h2>
+</div>
+
+<div class="scale-y-0 transition-transform bg-slate-700 rounded-2xl m-5 p-2 mx-10 md:mx-40" id="item-container-add">
+    <h3 class="text-xl text-center font-bold">Add</h3>
+    <input data-add-type="add" id="addinput-add" type="text" placeholder="Add..."
+        class="placeholder:italic w-500 rounded-md transition duration-300 outline-none focus:ring-cyan-400 focus:ring-4 bg-slate-600 p-1 m-5 my-2">
+    <button id="addbtn-add" data-addbtn-type="add"
+        class="w-8 h-8 font-bold hover:bg-green-600 rounded-md transition hover:scale-125 duration-300">＋</button>
+    {% for addlist in addlists %}
+    <div class="bg-teal-700 rounded-md p-0 m-5 flex items-center transition duration-300">
+        <span class="font-mono break-all m-2"><a href="{{ addlist }}">{{ addlist }}</a></span>
+        <button class="ml-auto hover:bg-red-600 duration-300 mr-1 hover:scale-125 rounded-md w-8 min-w-[32px] h-8"
+            data-remove-url="{{ addlist }}" data-list-type="add">✕</span>
+    </div>
+    {% endfor %}
+</div>
+<div class="scale-y-0 transition-transform bg-slate-700 rounded-2xl m-5 p-2 mx-10 md:mx-40" id="item-container-remove">
+    <h3 class="text-xl text-center font-bold">Remove</h3>
+    <input data-add-type="remove" id="addinput-remove" type="text" placeholder="Add..."
+        class="placeholder:italic w-500 rounded-md transition duration-300 outline-none focus:ring-cyan-400 focus:ring-4 bg-slate-600 p-1 m-5 my-2">
+    <button id="addbtn-remove" data-addbtn-type="remove"
+        class="w-8 h-8 font-bold hover:bg-green-600 rounded-md transition hover:scale-125 duration-300">＋</button>
+    {% for removelist in removelists %}
+    <div class="bg-teal-700 rounded-md p-0 m-5 flex items-center transition duration-300">
+        <span class="font-mono break-all m-2"><a href="{{ removelist }}">{{ removelist }}</a></span>
+        <button class="ml-auto hover:bg-red-600 duration-300 mr-1 hover:scale-125 rounded-md w-8 min-w-[32px] h-8"
+            data-remove-url="{{ removelist }}" data-list-type="remove">✕</span>
+    </div>
+    {% endfor %}
+</div>
+<template id="url-entry-template">
+    <div class="bg-teal-700 rounded-md p-0 m-5 flex items-center transition duration-300">
+        <span class="font-mono break-all m-2"><a href="url goes here">url goes here</a></span>
+        <button class="ml-auto hover:bg-red-600 duration-300 mr-1 hover:scale-125 rounded-md w-8 min-w-[32px] h-8"
+            data-remove-url="url goes here" data-list-type="list type goes here">✕</span>
+    </div>
+</template>
+
+
+<script>
+    for (elem of document.querySelectorAll("[data-add-type]")) {
+        document.getElementById("addbtn-" + elem.dataset.addType).addEventListener("click", (event) => {
+            let type = event.target.dataset.addbtnType
+            let url = document.getElementById("addinput-" + type).value
+            console.debug(`Adding ${url} with type ${type}`)
+            fetch("config/edit", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    "action": "add",
+                    "list_type": type,
+                    "url": url,
+                    "password": password
+                })
+            }).then((res) => {
+                if (res.ok) {
+                    let clone = document.getElementById("url-entry-template").content.cloneNode(true)
+                    console.debug("Cloned node ", clone, " with first child ", clone.firstElementChild)
+                    clone.querySelector("a").href = url
+                    clone.querySelector("a").innerText = url
+                    clone.querySelector("button").dataset.removeUrl = url
+                    clone.querySelector("button").dataset.listType = type
+                    clone.firstElementChild.classList.add("opacity-0")
+                    clone.firstElementChild.classList.add("scale-y-0")
+                    clone.firstElementChild.classList.add("translate-x-32")
+                    addRemoveButtonEventListener(clone.querySelector("button"))
+                    let container = document.getElementById("item-container-" + type)
+                    container.appendChild(clone)
+                    setTimeout(() => {
+                        container.lastElementChild.classList.remove("opacity-0")
+                        container.lastElementChild.classList.remove("scale-y-0")
+                        container.lastElementChild.classList.remove("translate-x-32")
+                    }, 1)
+                } else {
+                    console.error(res)
+                }
+            })
+        })
+        elem.addEventListener("keydown", (event) => {
+            if (event.key === "Enter") {
+                document.getElementById("addbtn-" + event.target.dataset.addType).click()
+            }
+        })
+    }
+
+    function addRemoveButtonEventListener(elem) {
+        console.debug(`Adding event listener to remove button for ${elem.dataset.removeUrl}`)
+        elem.addEventListener("click", (event) => {
+            let el = event.target
+            console.debug(`Removing ${el.dataset.removeUrl}`)
+            fetch("config/edit", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    "action": "delete",
+                    "list_type": el.dataset.listType,
+                    "url": el.dataset.removeUrl,
+                    "password": password
+                })
+            }).then((res) => {
+                if (res.ok) {
+                    let div = el.parentElement
+                    div.classList.add("opacity-0")
+                    div.classList.add("scale-y-0")
+                    div.classList.add("-translate-x-32")
+                    setTimeout(() => {
+                        div.remove()
+                    }, 300)
+                } else {
+                    console.error(res)
+                }
+            })
+        })
+    }
+
+    for (elem of document.querySelectorAll("[data-remove-url]")) {
+        addRemoveButtonEventListener(elem)
+    }
+
+    document.getElementById("password-btn").addEventListener("click", () => {
+        password = document.getElementById("password").value
+        let button = event.target
+        let confirmText = document.getElementById("password-confirmation")
+
+        fetch("checkpassword", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                "password": password
+            })
+        }).then((res) => {
+            if (res.ok) {
+                button.classList.remove("ring-red-400")
+                button.classList.add("ring-green-400")
+                confirmText.classList.remove("text-red-400")
+                confirmText.classList.add("text-green-400")
+                confirmText.innerText = "Correct password!"
+                for (id of ["item-container-add", "item-container-remove"]) {
+                    let elem = document.getElementById(id)
+                    elem.classList.remove("scale-y-0")
+                }
+                setTimeout(() => {
+                    document.getElementById("password-container").classList.add("scale-y-0")
+                    setTimeout(() => {
+                        for (elem of document.getElementById("password-container").children) {
+                            elem.disabled = true
+                        }
+                    }, 150)
+                }, 1000)
+            } else {
+                button.classList.remove("ring-green-400")
+                button.classList.add("ring-red-400")
+                confirmText.classList.add("text-red-400")
+                confirmText.classList.remove("text-green-400")
+                switch (res.status) {
+                    case 401:
+                        confirmText.innerText = "Incorrect password!"
+                        break
+                    case 429:
+                        confirmText.innerText = "Too fast! Please wait a few seconds."
+                        break
+                    default:
+                        confirmText.innerText = "An unknown error occured :("
+                }
+                console.error(res)
+            }
+        })
+    })
+
+    var password = ""
+
+    // i'm sorry you had to see this awful js code
+    // i absolutely should have just used vue
+</script>
+{% endblock body %}
