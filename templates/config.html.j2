@@ -69,20 +69,28 @@
                 if (res.ok) {
                     let clone = document.getElementById("url-entry-template").content.cloneNode(true)
                     console.debug("Cloned node ", clone, " with first child ", clone.firstElementChild)
-                    clone.querySelector("a").href = url
-                    clone.querySelector("a").innerText = url
-                    clone.querySelector("button").dataset.removeUrl = url
-                    clone.querySelector("button").dataset.listType = type
-                    clone.firstElementChild.classList.add("opacity-0")
-                    clone.firstElementChild.classList.add("scale-y-0")
-                    clone.firstElementChild.classList.add("translate-x-32")
+
+                    link = clone.querySelector("a")
+                    link.href = url
+                    link.innerText = url
+
+                    btn = clone.querySelector("button")
+                    btn.dataset.removeUrl = url
+                    btn.dataset.listType = type
+
+                    div = clone.firstElementChild.classList
+                    div.classList.add("opacity-0")
+                    div.classList.add("scale-y-0")
+                    div.classList.add("translate-x-32")
+
                     addRemoveButtonEventListener(clone.querySelector("button"))
                     let container = document.getElementById("item-container-" + type)
                     container.appendChild(clone)
                     setTimeout(() => {
-                        container.lastElementChild.classList.remove("opacity-0")
-                        container.lastElementChild.classList.remove("scale-y-0")
-                        container.lastElementChild.classList.remove("translate-x-32")
+                        lastItem = container.lastElementChild
+                        lastItem.classList.remove("opacity-0")
+                        lastItem.classList.remove("scale-y-0")
+                        lastItem.classList.remove("translate-x-32")
                     }, 1)
                 } else {
                     console.error(res)
@@ -181,8 +189,5 @@
     })
 
     var password = ""
-
-    // i'm sorry you had to see this awful js code
-    // i absolutely should have just used vue
 </script>
 {% endblock body %}
