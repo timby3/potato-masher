@@ -23,7 +23,7 @@ def index():
             },
             {
                 "url": "timings",
-                "desc": "Get the time (in seconds) that it takes to generate the addlist",
+                "desc": "Get the time (in seconds) that it takes to generate the list",
             },
         ],
     )
