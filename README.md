@@ -4,7 +4,38 @@ Combine lists of IPs from different sources into a single, minfied list.
 
 ## Usage
 
-1. Clone this repo: `git clone https://github.com/timby3/potato-masher`
-2. In `config.json`, set a password for adding/removing lists, and if you want you can also edit the lists there.
-3. Start the flask server however you want (e.g. [gunicorn](https://gunicorn.org))
-4. Success! You can find the list at `/list`, see how long it takes to generate at `/timings`, and manage lists at `/config`.
+### `config.json`
+
+```json
+{
+  "password": "supersecretpassword", // The password used for configuring the tool through the web interface
+  "add": [
+    // URLs of IP lists to add to the combined list
+    "https://raw.githubusercontent.com/SecOps-Institute/Tor-IP-Addresses/master/tor-exit-nodes.lst",
+    "https://rules.emergingthreats.net/blockrules/compromised-ips.txt"
+  ],
+  "remove": [] // URLs of IP lists to remove from the combined list
+}
+```
+
+### Routes
+
+#### `/`
+
+Show this list of routes
+
+#### `/config`
+
+Add or remove addlists and removelists from urls
+
+#### `/list`
+
+Get the full list of IPs in plaintext
+
+#### `/timings`
+
+Get the time (in seconds) that it takes to generate the list
+
+### Run
+
+potato-masher can be run like any other flask app.
