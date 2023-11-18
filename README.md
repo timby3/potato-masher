@@ -6,7 +6,7 @@ Combine lists of IPs from different sources into a single, minfied list.
 
 ### `config.json`
 
-```json
+```jsonc
 {
   "password": "supersecretpassword", // The password used for configuring the tool through the web interface
   "add": [
