@@ -38,4 +38,4 @@ Get the time (in seconds) that it takes to generate the list
 
 ### Run
 
-potato-masher can be run like any other flask app.
+Potato Masher can be run just like any other flask app.
