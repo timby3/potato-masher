@@ -1,4 +1,4 @@
-# ip-list-tool
+# potato-masher
 
 Combine lists of IPs from different sources into a single, minfied list.
 
