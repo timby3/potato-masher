@@ -40,4 +40,4 @@ Get the time (in seconds) that it takes to generate the list
 
 Potato Masher can be run just like any other flask app.
 
-A simple way to run it is with [Gunicorn](https://gunicorn.org). Just install it, and run `gunicorn -w 4 app:app` in the project directory. Replace 4 with the number of workers to use.
+A simple way to run it is with [Gunicorn](https://gunicorn.org). Just install it with `sudo apt install gunicorn`, and run `gunicorn -w 4 app:app` in the project directory. Replace 4 with the number of workers to use.
