@@ -19,11 +19,11 @@ def index():
             },
             {
                 "url": "list",
-                "desc": "Get the full list of IPs in plaintext",
+                "desc": "Get the full list of IP ranges in plaintext",
             },
             {
                 "url": "timings",
-                "desc": "Get the time (in seconds) that it takes to generate the list",
+                "desc": "Get the time (in seconds) taken to generate the list",
             },
         ],
     )
@@ -124,7 +124,7 @@ def write_list():
     last_updated_timestamp = time.time()
     blist = create_list()
     time_taken = time.time() - last_updated_timestamp
-    app.logger.info(f"Generated IP list in {time_taken}s")
+    app.logger.info(f"Generated list in {time_taken}s")
     current_list = "\n".join(blist)
 
 
@@ -140,7 +140,7 @@ def create_list():
             ip = IPNetwork(item)
             if ip.prefixlen < 16:
                 app.logger.warning(
-                    f"Skipping address {item} because the CIDR prefix is too low ({ip.prefixlen} < 16)"
+                    f"Skipping address {item} because the CIDR prefix is too broad ({ip.prefixlen} < 16)"
                 )
                 continue
             blist += [IPAddress(ipaddr) for ipaddr in ip]
@@ -189,5 +189,5 @@ with open("config.json", "r") as f:
     password = conf["password"]
 
 last_updated_timestamp = 0.0
-time_taken = "Unknown. Please generate the list first."
+time_taken = "No data. Please generate the list first."
 current_list = ""
